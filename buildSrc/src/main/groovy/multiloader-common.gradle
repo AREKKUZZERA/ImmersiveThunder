@@ -60,13 +60,13 @@ repositories {
 
 sourcesJar {
     from(rootProject.file('LICENSE')) {
-        rename { "${it}_${mod_name}" }
+        rename { "${it}_${mod_file_name}" }
     }
 }
 
 jar {
     from(rootProject.file('LICENSE')) {
-        rename { "${it}_${mod_name}" }
+        rename { "${it}_${mod_file_name}" }
     }
 
     manifest {
@@ -91,6 +91,7 @@ processResources {
             'fabric_version'               : fabric_version,
             'fabric_loader_version'        : fabric_loader_version,
             'mod_name'                     : mod_name,
+            'mod_file_name'                : mod_file_name,
             'mod_author'                   : mod_author,
             'mod_id'                       : mod_id,
             'license'                      : license,

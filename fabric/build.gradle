@@ -3,6 +3,10 @@ plugins {
     id 'fabric-loom'
 }
 
+base {
+    archivesName = "${mod_file_name}-fabric-${minecraft_version}"
+}
+
 repositories {
     maven {
         name = "Terraformers"

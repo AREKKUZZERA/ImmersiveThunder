@@ -25,6 +25,12 @@ minecraft {
 
 sourceSets.main.resources.srcDir 'src/generated/resources'
 
+processResources {
+    from(project(':common').file("src/main/resources/assets/${mod_id}/icon.png")) {
+        rename { "${mod_id}.png" }
+    }
+}
+
 repositories {
     minecraft.mavenizer(it)
     maven fg.forgeMaven

@@ -12,8 +12,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import java.util.Objects;
-
 
 @Mixin(LightningBolt.class)
 public class ImmersiveThunderMixin implements ThunderSoundInterface {
@@ -22,8 +20,12 @@ public class ImmersiveThunderMixin implements ThunderSoundInterface {
     private void playSound(Level level, double x, double y, double z, SoundEvent sound, SoundSource source, float volume, float pitch, boolean useDistance) {
         LightningBolt lightningBolt = (LightningBolt) (Object) this;
         LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) {
+            level.playLocalSound(x, y, z, sound, source, volume, pitch, useDistance);
+            return;
+        }
 
-        double distanceToEntity = Objects.requireNonNull(player).distanceTo(lightningBolt);
+        double distanceToEntity = player.distanceTo(lightningBolt);
 
         if (distanceToEntity <= closeDistance) {
             playThunderSound(level, lightningBolt, Constants.ENTITY_LIGHTNING_BOLT_THUNDER_CLOSE, thunderCloseVolume, false);

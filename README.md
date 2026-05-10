@@ -2,10 +2,8 @@
 
 **ImmersiveThunder: Reforged** replaces the default thunder with more immersive sounds that react to distance. Nearby strikes sound loud and intense, while distant thunder is quieter and reaches the player with a delay.
 
-Requires **[Fabric API](https://modrinth.com/mod/fabric-api)**.  
-Requires **Fabric Loader 0.19.2** or newer.
-
-Best experienced with **[Sound Physics Remastered](https://modrinth.com/mod/sound-physics-remastered)**.
+- Requires **[Fabric API](https://modrinth.com/mod/fabric-api)**.  
+- Best experienced with **[Sound Physics Remastered](https://modrinth.com/mod/sound-physics-remastered)**.
 
 ## 📖 About This Fork
 

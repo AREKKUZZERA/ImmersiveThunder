@@ -13,6 +13,10 @@ java {
     withJavadocJar()
 }
 
+tasks.withType(Javadoc).configureEach {
+    options.addBooleanOption('Xdoclint:all,-missing', true)
+}
+
 repositories {
     mavenCentral()
     // https://docs.gradle.org/current/userguide/declaring_repositories.html#declaring_content_exclusively_found_in_one_repository
@@ -85,6 +89,7 @@ jar {
 processResources {
     var expandProps = [
             'version'                      : version,
+            'mod_version'                  : "${version}+${minecraft_version_label}",
             'group'                        : project.group, //Else we target the task's group.
             'minecraft_version'            : minecraft_version,
             'minecraft_version_label'      : minecraft_version_label,

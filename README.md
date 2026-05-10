@@ -14,7 +14,6 @@ It updates the mod for newer Minecraft versions and modern Fabric releases while
 ## 💳 Credits
 
 - **netcatgirl** — original creator of **[ImmersiveThunder](https://github.com/netcatgirl/ImmersiveThunder)**
-- **ImmersiveThunder contributors** — original code and contributions
 - **Original Source:** [netcatgirl/ImmersiveThunder](https://github.com/netcatgirl/ImmersiveThunder)
 - **Original Mod:** [ImmersiveThunder on Modrinth](https://modrinth.com/mod/immersivethunder)
 

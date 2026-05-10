@@ -8,8 +8,8 @@
     "${mod_author}"
   ],
   "contact": {
-    "homepage": "https://github.com/netcatgirl/ImmersiveThunder",
-    "sources": "https://github.com/netcatgirl/ImmersiveThunder"
+    "homepage": "https://github.com/AREKKUZZERA/ImmersiveThunder-Reforged",
+    "sources": "https://github.com/AREKKUZZERA/ImmersiveThunder-Reforged"
   },
   "license": "${license}",
   "icon": "assets/immersivethunder/icon.png",
@@ -26,7 +26,7 @@
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",
     "fabric-api": "*",
-    "minecraft": "~${minecraft_version}",
+    "minecraft": "${fabric_minecraft_version_range}",
     "java": ">=${java_version}"
   }
 }

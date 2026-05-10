@@ -1,10 +1,11 @@
 plugins {
     id 'multiloader-loader'
-    id 'fabric-loom'
 }
 
+apply plugin: minecraft_unobfuscated.toBoolean() ? 'net.fabricmc.fabric-loom' : 'net.fabricmc.fabric-loom-remap'
+
 base {
-    archivesName = "${mod_file_name}-fabric-${minecraft_version}"
+    archivesName = "${mod_file_name}-fabric-${minecraft_version_label}"
 }
 
 repositories {
@@ -20,19 +21,30 @@ repositories {
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
-    }
-    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 
-    // Cloth Config
-    modImplementation("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
+    if (!minecraft_unobfuscated.toBoolean()) {
+        mappings loom.layered {
+            officialMojangMappings()
+            if (parchment_minecraft && parchment_version) {
+                parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
+            }
+        }
     }
 
-    modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+    def fabricDependencyConfiguration = minecraft_unobfuscated.toBoolean() ? 'implementation' : 'modImplementation'
+    add(fabricDependencyConfiguration, "net.fabricmc:fabric-loader:${fabric_loader_version}")
+    add(fabricDependencyConfiguration, "net.fabricmc.fabric-api:fabric-api:${fabric_version}")
+
+    if (project.cloth_config_version) {
+        // Cloth Config
+        add(fabricDependencyConfiguration, "me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
+            exclude(group: "net.fabricmc.fabric-api")
+        }
+    }
+
+    if (project.modmenu_version) {
+        add(fabricDependencyConfiguration, "com.terraformersmc:modmenu:${project.modmenu_version}")
+    }
 }
 
 loom {

@@ -19,5 +19,3 @@ It updates the mod for newer Minecraft versions and modern Fabric releases while
 
 > [!IMPORTANT]
 > This is an unofficial continuation of ImmersiveThunder and is not affiliated with or maintained by the original author.
-
-Source code: https://github.com/AREKKUZZERA/ImmersiveThunder-Reforged

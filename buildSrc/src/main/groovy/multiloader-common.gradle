@@ -87,6 +87,11 @@ jar {
 }
 
 processResources {
+    var packFormat = minecraft_version.startsWith('26.') ? 82 : 75
+    var packFormatFields = minecraft_version.startsWith('26.')
+            ? '"min_format": 82,\n        "max_format": 82'
+            : '"supported_formats": [75, 81]'
+
     var expandProps = [
             'version'                      : version,
             'mod_version'                  : "${version}+${minecraft_version_label}",
@@ -112,7 +117,9 @@ processResources {
             "forge_dependency_version_range": forge_dependency_version_range,
             "forge_minecraft_version_range": forge_minecraft_version_range,
             'credits'                      : credits,
-            'java_version'                 : java_version
+            'java_version'                 : java_version,
+            'pack_format'                  : packFormat,
+            'pack_format_fields'           : packFormatFields
     ]
 
     var jsonExpandProps = expandProps.collectEntries {
@@ -123,8 +130,18 @@ processResources {
         expand expandProps
     }
 
-    filesMatching(['pack.mcmeta', 'fabric.mod.json', '*.mixins.json']) {
+    filesMatching('pack.mcmeta') {
+        expand expandProps
+    }
+
+    filesMatching(['fabric.mod.json', '*.mixins.json']) {
         expand jsonExpandProps
+    }
+
+    eachFile {
+        if (it.name.startsWith('immersivethunder') && it.name.endsWith('.mixins.json')) {
+            it.name = it.name.replaceFirst('immersivethunder', mod_id)
+        }
     }
 
     inputs.properties(expandProps)

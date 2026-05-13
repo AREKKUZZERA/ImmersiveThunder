@@ -1,7 +1,6 @@
 package com.netcatgirl.immersivethunder;
 
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 
 

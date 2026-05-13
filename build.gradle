@@ -20,3 +20,56 @@ allprojects {
         ext.set(key.toString(), value.toString())
     }
 }
+
+def releaseDir = layout.buildDirectory.dir('realese')
+def minecraftTargets = fileTree('gradle/minecraft-versions') {
+    include '*.properties'
+}.files.collect { it.name - '.properties' }.sort()
+def fabricReleaseTargets = ['1.21.x', '26.1.2'] as Set
+
+tasks.register('cleanRealese', Delete) {
+    group = 'build'
+    description = 'Delete build/realese and loader jar outputs.'
+    delete releaseDir
+    delete subprojects.collect { subproject ->
+        subproject.fileTree(subproject.layout.buildDirectory.dir('libs')) {
+            include '*.jar'
+        }
+    }
+}
+
+def releaseBuildTasks = minecraftTargets.collect { target ->
+    def taskSuffix = target.replaceAll(/[^A-Za-z0-9]/, '_')
+    def loaders = fabricReleaseTargets.contains(target) ? ['fabric', 'forge', 'neoforge'] : ['forge', 'neoforge']
+    tasks.register("buildRealese${taskSuffix}", GradleBuild) {
+        group = 'build'
+        description = "Build ${loaders.join(', ')} jars for Minecraft ${target}."
+        buildName = "ImmersiveThunder-${taskSuffix}"
+        startParameter.projectProperties = new LinkedHashMap<>(gradle.startParameter.projectProperties) + [mc_target: target]
+        tasks = loaders.collect { ":${it}:build".toString() }
+    }
+}
+
+releaseBuildTasks.eachWithIndex { taskProvider, index ->
+    taskProvider.configure {
+        mustRunAfter project.tasks.named('cleanRealese')
+        if (index > 0) {
+            mustRunAfter releaseBuildTasks[index - 1]
+        }
+    }
+}
+
+tasks.register('buildRealeseJars', Copy) {
+    group = 'build'
+    description = 'Build all release jars and copy them to build/realese by loader.'
+    dependsOn tasks.named('cleanRealese')
+    dependsOn releaseBuildTasks
+    ['fabric', 'forge', 'neoforge'].each { loader ->
+        from(project(":${loader}").layout.buildDirectory.dir('libs')) {
+            include '*.jar'
+            exclude '*-sources.jar', '*-javadoc.jar'
+            into loader
+        }
+    }
+    into releaseDir
+}

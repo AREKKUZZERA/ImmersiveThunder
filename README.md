@@ -1,7 +1,7 @@
 # ImmersiveThunder: Reforged
 
 <p align="center">
-  <a href="https://legacy.curseforge.com/minecraft/mc-mods/immersivethunder-reforged">
+  <a href="https://www.curseforge.com/minecraft/mc-mods/immersivethunder-reforged">
     <img src="https://i.imgur.com/rpoyjVG.png" alt="CurseForge">
   </a>
   <img src="https://i.imgur.com/VgKekoJ.png" alt="-">

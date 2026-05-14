@@ -1,5 +1,19 @@
 # ImmersiveThunder: Reforged
 
+<p align="center">
+  <a href="https://legacy.curseforge.com/minecraft/mc-mods/immersivethunder-reforged">
+    <img src="https://i.imgur.com/rpoyjVG.png" alt="CurseForge">
+  </a>
+  <img src="https://i.imgur.com/VgKekoJ.png" alt="-">
+  <a href="https://modrinth.com/mod/immersivethunder-reforged">
+    <img src="https://i.imgur.com/7fioiRx.png" alt="Modrinth">
+  </a>
+  <img src="https://i.imgur.com/tiNmDIH.png" alt="-">
+  <a href="https://github.com/AREKKUZZERA/ImmersiveThunder-Reforged">
+    <img src="https://i.imgur.com/EYNx6oL.png" alt="GitHub">
+  </a>
+</p>
+
 **ImmersiveThunder: Reforged** replaces the default thunder with more immersive sounds that react to distance. Nearby strikes sound loud and intense, while distant thunder is quieter and reaches the player with a delay.
 
 - Requires **[Fabric API](https://modrinth.com/mod/fabric-api)**.

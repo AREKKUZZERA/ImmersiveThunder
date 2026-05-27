@@ -21,15 +21,24 @@ allprojects {
     }
 }
 
-def releaseDir = layout.buildDirectory.dir('realese')
+def releaseDir = layout.buildDirectory.dir('release')
 def minecraftTargets = fileTree('gradle/minecraft-versions') {
     include '*.properties'
 }.files.collect { it.name - '.properties' }.sort()
 def fabricReleaseTargets = ['1.21.x', '26.1.2'] as Set
+def forgeOnlyReleaseTargets = ['26.1.1'] as Set
 
-tasks.register('cleanRealese', Delete) {
+def loadersForTarget = { target ->
+    forgeOnlyReleaseTargets.contains(target)
+            ? ['forge']
+            : fabricReleaseTargets.contains(target) ? ['fabric', 'forge', 'neoforge'] : ['forge', 'neoforge']
+}
+
+def currentLoaders = loadersForTarget(minecraftTarget)
+
+tasks.register('cleanPackageOutputs', Delete) {
     group = 'build'
-    description = 'Delete build/realese and loader jar outputs.'
+    description = 'Delete packaged loader jar outputs.'
     delete releaseDir
     delete subprojects.collect { subproject ->
         subproject.fileTree(subproject.layout.buildDirectory.dir('libs')) {
@@ -38,31 +47,54 @@ tasks.register('cleanRealese', Delete) {
     }
 }
 
+tasks.register('packageMod') {
+    group = 'build'
+    description = "Build ${currentLoaders.join(', ')} jars for Minecraft ${minecraftTarget}."
+    dependsOn currentLoaders.collect { ":${it}:build".toString() }
+}
+
+tasks.register('cleanPackage') {
+    group = 'build'
+    description = "Delete packaged jars and build ${currentLoaders.join(', ')} jars for Minecraft ${minecraftTarget}."
+    dependsOn tasks.named('cleanPackageOutputs')
+    dependsOn tasks.named('packageMod')
+}
+
+tasks.named('packageMod').configure {
+    mustRunAfter tasks.named('cleanPackageOutputs')
+}
+
 def releaseBuildTasks = minecraftTargets.collect { target ->
     def taskSuffix = target.replaceAll(/[^A-Za-z0-9]/, '_')
-    def loaders = fabricReleaseTargets.contains(target) ? ['fabric', 'forge', 'neoforge'] : ['forge', 'neoforge']
-    tasks.register("buildRealese${taskSuffix}", GradleBuild) {
-        group = 'build'
+    def loaders = loadersForTarget(target)
+    def releaseTask = tasks.register("buildRelease${taskSuffix}", GradleBuild) {
+        group = 'release'
         description = "Build ${loaders.join(', ')} jars for Minecraft ${target}."
         buildName = "ImmersiveThunder-${taskSuffix}"
         startParameter.projectProperties = new LinkedHashMap<>(gradle.startParameter.projectProperties) + [mc_target: target]
         tasks = loaders.collect { ":${it}:build".toString() }
     }
+    tasks.register("buildRealese${taskSuffix}") {
+        group = 'release'
+        description = "Deprecated alias for buildRelease${taskSuffix}."
+        dependsOn releaseTask
+    }
+    releaseTask
 }
 
 releaseBuildTasks.eachWithIndex { taskProvider, index ->
     taskProvider.configure {
-        mustRunAfter project.tasks.named('cleanRealese')
+        mustRunAfter project.tasks.named('cleanPackageOutputs')
         if (index > 0) {
             mustRunAfter releaseBuildTasks[index - 1]
         }
     }
 }
 
-tasks.register('buildRealeseJars', Copy) {
-    group = 'build'
-    description = 'Build all release jars and copy them to build/realese by loader.'
-    dependsOn tasks.named('cleanRealese')
+tasks.register('packageRelease', Copy) {
+    group = 'release'
+    description = 'Build all release jars and copy them to build/release by loader.'
+    dependsOn tasks.named('cleanPackageOutputs')
     dependsOn releaseBuildTasks
     ['fabric', 'forge', 'neoforge'].each { loader ->
         from(project(":${loader}").layout.buildDirectory.dir('libs')) {
@@ -72,4 +104,22 @@ tasks.register('buildRealeseJars', Copy) {
         }
     }
     into releaseDir
+}
+
+tasks.register('cleanRelease') {
+    group = 'release'
+    description = 'Delete build/release and loader jar outputs.'
+    dependsOn tasks.named('cleanPackageOutputs')
+}
+
+tasks.register('cleanRealese') {
+    group = 'release'
+    description = 'Deprecated alias for cleanRelease.'
+    dependsOn tasks.named('cleanRelease')
+}
+
+tasks.register('buildRealeseJars') {
+    group = 'release'
+    description = 'Deprecated alias for packageRelease.'
+    dependsOn tasks.named('packageRelease')
 }

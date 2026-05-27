@@ -31,14 +31,16 @@ processResources {
     from(configurations.commonResources)
 }
 
-tasks.named('javadoc', Javadoc).configure {
-    dependsOn(configurations.commonJava)
-    source(configurations.commonJava)
-}
+if (project.providers.gradleProperty('withDocs').map { it.toBoolean() }.orElse(false).get()) {
+    tasks.named('javadoc', Javadoc).configure {
+        dependsOn(configurations.commonJava)
+        source(configurations.commonJava)
+    }
 
-tasks.named('sourcesJar', Jar) {
-    dependsOn(configurations.commonJava)
-    from(configurations.commonJava)
-    dependsOn(configurations.commonResources)
-    from(configurations.commonResources)
+    tasks.named('sourcesJar', Jar) {
+        dependsOn(configurations.commonJava)
+        from(configurations.commonJava)
+        dependsOn(configurations.commonResources)
+        from(configurations.commonResources)
+    }
 }

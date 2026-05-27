@@ -2,6 +2,13 @@ plugins {
     id 'multiloader-loader'
 }
 
+if (!project.fabric_version) {
+    tasks.configureEach {
+        enabled = false
+    }
+    return
+}
+
 apply plugin: minecraft_unobfuscated.toBoolean() ? 'net.fabricmc.fabric-loom' : 'net.fabricmc.fabric-loom-remap'
 
 base {

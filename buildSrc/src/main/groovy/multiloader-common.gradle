@@ -7,13 +7,21 @@ base {
     archivesName = "${mod_file_name}-${project.name}-${minecraft_version_label}"
 }
 
+def includeDocs = providers.gradleProperty('withDocs')
+        .map { it.toBoolean() }
+        .orElse(false)
+        .get()
+
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(java_version)
-    withSourcesJar()
-    withJavadocJar()
+    if (includeDocs) {
+        withSourcesJar()
+        withJavadocJar()
+    }
 }
 
 tasks.withType(Javadoc).configureEach {
+    enabled = includeDocs
     options.addBooleanOption('Xdoclint:all,-missing', true)
 }
 
@@ -43,15 +51,26 @@ repositories {
         filter { includeGroup('org.parchmentmc.data') }
     }
     maven {
+        name = "NeoForge"
+        url = 'https://maven.neoforged.net/releases'
+    }
+    maven {
         name = 'BlameJared'
         url = 'https://maven.blamejared.com'
+        content {
+            excludeGroupAndSubgroups('net.minecraftforge')
+        }
     }
 }
 
 // Declare capabilities on the outgoing configurations.
 // Read more about capabilities here: https://docs.gradle.org/current/userguide/component_capabilities.html#sec:declaring-additional-capabilities-for-a-local-component
 ['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements'].each { variant ->
-    configurations."$variant".outgoing {
+    def configuration = configurations.findByName(variant)
+    if (configuration == null) {
+        return
+    }
+    configuration.outgoing {
         capability("$group:${project.name}:$version")
         capability("$group:${base.archivesName.get()}:$version")
         capability("$group:$mod_id-${project.name}-${minecraft_version}:$version")
@@ -62,9 +81,11 @@ repositories {
     }
 }
 
-sourcesJar {
-    from(rootProject.file('LICENSE')) {
-        rename { "${it}_${mod_file_name}" }
+if (includeDocs) {
+    sourcesJar {
+        from(rootProject.file('LICENSE')) {
+            rename { "${it}_${mod_file_name}" }
+        }
     }
 }
 
